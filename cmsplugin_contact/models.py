@@ -12,7 +12,7 @@ class BaseContact(CMSPlugin):
         (1, 'Akismet'),
         (2, 'ReCAPTCHA'),
     )
-    
+
     THEME_CHOICES = (
         ('clean', 'Clean'),
         ('red', 'Red'),
@@ -38,13 +38,13 @@ class BaseContact(CMSPlugin):
         default=_('Thank you for your message.'), max_length=200)
     submit = models.CharField(_('Submit button value'),
                               default=_('Submit'), max_length=30)
-    
+
     spam_protection_method = models.SmallIntegerField(
         verbose_name=_('Spam protection method'),
         choices=SPAM_PROTECTION_CHOICES, default=0)
-    
+
     akismet_api_key = models.CharField(max_length=255, blank=True)
-    
+
     recaptcha_public_key = models.CharField(max_length=255, blank=True)
     recaptcha_private_key = models.CharField(max_length=255, blank=True)
     recaptcha_theme = models.CharField(max_length=20,
@@ -52,11 +52,14 @@ class BaseContact(CMSPlugin):
                                        default='clean',
                                        verbose_name=_('ReCAPTCHA theme'))
 
-    redirect_url = models.URLField(_('URL Redirection'), help_text=_('If it is set, the form redirect to url when the form is valid'), blank=True)
+    redirect_url = models.CharField(_('URL Redirection'),
+                                    help_text=_('Reverse ID of a CMS page to redirect to'),
+                                    blank=True,
+                                    max_length=255)
 
     class Meta:
         abstract = True
-    
+
     def __unicode__(self):
         return self.site_email
 

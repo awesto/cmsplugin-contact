@@ -8,6 +8,7 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string, select_template
 from django.http import HttpResponseRedirect
 
+from cms.models import Page
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from cmsplugin_contact.utils import class_for_path
@@ -167,12 +168,14 @@ class ContactPlugin(CMSPluginBase):
         instance.render_template = getattr(form, 'template', self.render_template)
         if request.method == "POST" and form.is_valid():
             self.send(form, instance.form_name, instance.site_email, attachments=request.FILES)
-            
+
             if instance.redirect_url:
-                setattr(request, 'django_cms_contact_redirect_to', HttpResponseRedirect(instance.redirect_url)) 
+                page = Page.objects.get(reverse_id=instance.redirect_url, publisher_is_draft=False)
+                target_url = page.get_absolute_url()
+                setattr(request, 'django_cms_contact_redirect_to', HttpResponseRedirect(target_url))
             context.update({
                 'contact': instance,
-            })        
+            })
         else:
             context.update({
                 'contact': instance,
